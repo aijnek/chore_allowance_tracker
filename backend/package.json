@@ -1,0 +1,29 @@
+{
+  "name": "chore-allowance-tracker-backend",
+  "version": "1.0.0",
+  "description": "Backend for Chore Allowance Tracker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "sam local start-api",
+    "sam:build": "sam build",
+    "sam:deploy": "sam deploy --guided",
+    "sam:package": "sam package --output-template-file packaged.yaml",
+    "deploy": "npm run build && npm run sam:build && npm run sam:deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1354.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.115",
+    "@types/node": "^18.16.0",
+    "@types/uuid": "^9.0.1",
+    "typescript": "^5.0.4",
+    "esbuild": "^0.17.18"
+  }
+}

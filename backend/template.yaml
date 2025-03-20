@@ -1,0 +1,321 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Chore Allowance Tracker Backend
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+    Handler: index.handler
+    Environment:
+      Variables:
+        CHORES_TABLE: !Ref ChoresTable
+        RECORDS_TABLE: !Ref RecordsTable
+        CHILDREN_TABLE: !Ref ChildrenTable
+
+Resources:
+  # API Gateway
+  ChoreAllowanceApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  # DynamoDB Tables
+  ChoresTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChoresTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  RecordsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: RecordsTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  ChildrenTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChildrenTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  # Lambda Functions
+  GetChoresFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/chores/
+      Events:
+        GetChores:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /chores
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChoresTable
+
+  GetChoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/chores/
+      Events:
+        GetChore:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /chores/{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChoresTable
+
+  CreateChoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/chores/
+      Events:
+        CreateChore:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /chores
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChoresTable
+
+  UpdateChoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/chores/
+      Events:
+        UpdateChore:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /chores/{id}
+            Method: PUT
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChoresTable
+
+  DeleteChoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/chores/
+      Events:
+        DeleteChore:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /chores/{id}
+            Method: DELETE
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChoresTable
+
+  GetChildrenFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/children/
+      Events:
+        GetChildren:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /children
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChildrenTable
+
+  GetChildFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/children/
+      Events:
+        GetChild:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /children/{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChildrenTable
+
+  CreateChildFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/children/
+      Events:
+        CreateChild:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /children
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChildrenTable
+
+  UpdateChildFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/children/
+      Events:
+        UpdateChild:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /children/{id}
+            Method: PUT
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChildrenTable
+
+  DeleteChildFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/children/
+      Events:
+        DeleteChild:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /children/{id}
+            Method: DELETE
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ChildrenTable
+
+  GetRecordsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/records/
+      Events:
+        GetRecords:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /records
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
+
+  GetRecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/records/
+      Events:
+        GetRecord:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /records/{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
+
+  CreateRecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/records/
+      Events:
+        CreateRecord:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /records
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RecordsTable
+
+  UpdateRecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/records/
+      Events:
+        UpdateRecord:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /records/{id}
+            Method: PUT
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RecordsTable
+
+  DeleteRecordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/records/
+      Events:
+        DeleteRecord:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /records/{id}
+            Method: DELETE
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RecordsTable
+
+  GetAllowancesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/allowances/
+      Events:
+        GetAllowances:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ChoreAllowanceApi
+            Path: /allowances
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChoresTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref RecordsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref ChildrenTable
+
+Outputs:
+  ChoreAllowanceApi:
+    Description: "API Gateway endpoint URL for Prod stage for Chore Allowance Tracker API"
+    Value: !Sub "https://${ChoreAllowanceApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+  ChoresTable:
+    Description: "DynamoDB table for chores"
+    Value: !Ref ChoresTable
+  RecordsTable:
+    Description: "DynamoDB table for records"
+    Value: !Ref RecordsTable
+  ChildrenTable:
+    Description: "DynamoDB table for children"
+    Value: !Ref ChildrenTable
