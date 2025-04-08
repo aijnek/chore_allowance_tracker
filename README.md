@@ -1,6 +1,6 @@
 # Chore Allowance Tracker
 
-A web application for tracking chores and calculating monthly allowances for children.
+A web application for tracking chores and calculating monthly allowances for children. Created by vibe coding with Windsurf.
 
 ## Features
 
